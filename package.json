@@ -1,0 +1,40 @@
+{
+  "name": "decentralised-publishing",
+  "version": "1.0.0",
+  "description": "Decentralised Research Paper publishing application",
+  "main": "server.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sangatdas/decentralised-publishing.git"
+  },
+  "keywords": [
+    "solidity",
+    "ethereum",
+    "decentralised",
+    "research",
+    "papers",
+    "javascript",
+    "web3js",
+    "smart",
+    "contracts",
+    "ERC20"
+  ],
+  "author": "Sangat Das",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sangatdas/decentralised-publishing/issues"
+  },
+  "homepage": "https://github.com/Sangatdas/decentralised-publishing#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.9.19",
+    "web3": "^1.2.9"
+  }
+}
