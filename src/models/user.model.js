@@ -24,6 +24,10 @@ const UserSchema = new Schema({
         type: String,
         required: true,
         default: 0
+    },
+    account: {
+        type: String,
+        required: true
     }
 });
 
