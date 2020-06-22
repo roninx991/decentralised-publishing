@@ -16,14 +16,11 @@ router.get("/:id", (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-    const user = new Promise((resolve) => {
-        resolve(UserService.createNewUser(req.body));
-    });
-    console.log(user);
+    const user = await UserService.createNewUser(req.body);
     if (user) {
-        res.status(200).json({_id: user.id, account: user.account});
+        res.status(200).json({code: "success", msg: "Account created successfully. Please login to continue."});
     } else {
-        res.status(400).json({error: "Error creating new user."});
+        res.status(400).json({code: "error", msg: "Failed to create account using given details. Try again with a different email"});
     }
 });
 

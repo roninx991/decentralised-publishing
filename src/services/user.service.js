@@ -3,37 +3,20 @@ const User = require('../models/user.model');
 
 const web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
 
-exports.createNewUser = (user) => {
-    this.findByEmail(user.email)
-        .then(existingUser => {
-            if (existingUser) {
-                return null;
-            } else {
-                return  web3.eth.personal.newAccount(user.password).then(async (account) => {
-                        var newUser = new User(user);
-                        console.log(newUser);
-                        newUser.password = newUser.setPassword(user.password);
-                        newUser.firstname = user.firstname;
-                        newUser.lastname = user.lastname;
-                        newUser.email = user.email;
-                        newUser.account = account;
-                        newUser.save();
-                        return { id: newUser._id, account: account};    
-                    }).catch((err) => {
-                        console.log("Error in creating account in geth.");
-                        console.log(err);
-                    });
-            }
-        }).catch((err) => {
-            console.log("Error in creating new user.");
-            console.log(err);
-        });
+exports.createNewUser = async (user) => {
+    const userExists = await userExistsAlready(user);
+    if(userExists) {
+        console.log("True");
+    } else {
+        const account = await web3.eth.personal.newAccount(user.password);
+        const newUser = await saveUser(user, account);
+        return Promise.resolve(newUser, account);
+    }
 }
 
 exports.findByEmail = (email) => {
     return User.findOne({email: email}).then((user) => {
         if (!user) {
-            console.log("No such user exists with email: ", email);
             return null;
         } 
         return user;
@@ -59,4 +42,23 @@ exports.updateUser = (email, perm_lvl) => {
         console.log(err);
         return null;
     })
+}
+
+function saveUser(user, account) {
+    var newUser = new User(user);
+    newUser.password = newUser.setPassword(user.password);
+    newUser.firstname = user.firstname;
+    newUser.lastname = user.lastname;
+    newUser.email = user.email;
+    newUser.account = account;
+    newUser.save()
+    return Promise.resolve(newUser);
+}
+
+async function userExistsAlready(user) {
+    const existingUser = await exports.findByEmail(user.email);
+    if(existingUser) {
+        return Promise.resolve(true);
+    }
+    return Promise.resolve(false);
 }
