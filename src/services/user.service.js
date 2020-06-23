@@ -1,16 +1,41 @@
 const Web3 = require('web3');
 const User = require('../models/user.model');
+const crypto = require('crypto');
 
 const web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
 
 exports.createNewUser = async (user) => {
     const userExists = await userExistsAlready(user);
     if(userExists) {
-        console.log("True");
+        console.log("User already exists!");
+        return null;
     } else {
-        const account = await web3.eth.personal.newAccount(user.password);
-        const newUser = await saveUser(user, account);
-        return Promise.resolve(newUser, account);
+        try {
+            const account = await web3.eth.personal.newAccount(user.password);
+            const newUser = await saveUser(user, account);
+            return Promise.resolve(newUser);    
+        } catch (err) {
+            console.log(err);
+            return null;
+        }
+    }
+}
+
+exports.loginUser = async (loginRequest) => {
+    const user = await this.findByEmail(loginRequest.email);
+    if (user) {
+        let salt = user.password.split('$')[0];
+        let hash = crypto.createHmac('sha512',salt)
+                            .update(loginRequest.password)
+                            .digest("base64");
+        let password = salt + '$' + hash;
+        if (user.password === password) {
+            return Promise.resolve(user);
+        } else {
+            return null;
+        }
+    } else {
+        return null;
     }
 }
 
@@ -51,8 +76,16 @@ function saveUser(user, account) {
     newUser.lastname = user.lastname;
     newUser.email = user.email;
     newUser.account = account;
-    newUser.save()
-    return Promise.resolve(newUser);
+    return newUser
+        .save()
+        .then(() => {
+            return Promise.resolve(newUser);
+        })
+        .catch((err) => {
+            console.log(err.Error);
+            return null;
+        });
+    
 }
 
 async function userExistsAlready(user) {

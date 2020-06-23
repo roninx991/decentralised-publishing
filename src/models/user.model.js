@@ -39,8 +39,4 @@ UserSchema.methods.setPassword = (password) => {
     return salt + "$" + hash;
 }
 
-UserSchema.methods.validatePassword = (password) => {
-    return this.password === this.setPassword(password);
-}
-
 module.exports = mongoose.model('User', UserSchema);
