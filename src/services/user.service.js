@@ -22,7 +22,7 @@ exports.createNewUser = async (user) => {
 }
 
 exports.loginUser = async (loginRequest) => {
-    const user = await this.findByEmail(loginRequest.email);
+    const user = await findByEmail(loginRequest.email);
     if (user) {
         let salt = user.password.split('$')[0];
         let hash = crypto.createHmac('sha512',salt)
@@ -39,18 +39,7 @@ exports.loginUser = async (loginRequest) => {
     }
 }
 
-exports.findByEmail = (email) => {
-    return User.findOne({email: email}).then((user) => {
-        if (!user) {
-            return null;
-        } 
-        return user;
-    }).catch((err) => {
-        console.log("Error finding user: ", email);
-        console.log(err);
-        return null;
-    });
-}
+
 
 exports.updateUser = (email, perm_lvl) => {
     this.findByEmail(email).then((user) => {
@@ -94,4 +83,17 @@ async function userExistsAlready(user) {
         return Promise.resolve(true);
     }
     return Promise.resolve(false);
+}
+
+function findByEmail(email) {
+    return User.findOne({email: email}).then((user) => {
+        if (!user) {
+            return null;
+        } 
+        return user;
+    }).catch((err) => {
+        console.log("Error finding user: ", email);
+        console.log(err);
+        return null;
+    });
 }

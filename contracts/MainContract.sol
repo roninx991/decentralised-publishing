@@ -174,5 +174,5 @@ contract MainContract {
     {
         return submissions[docHash].marks;
     }
-
+    
 }
