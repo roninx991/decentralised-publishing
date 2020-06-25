@@ -1,4 +1,4 @@
-const Token = artifacts.require("SARAToken");
+const Token = artifacts.require("DPToken");
 const Main = artifacts.require("MainContract");
 
 module.exports = function(deployer) {

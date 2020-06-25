@@ -36,6 +36,7 @@
     "express": "^4.17.1",
     "mongoose": "^5.9.19",
     "openzeppelin-solidity": "^2.2.0",
+    "path": "^0.12.7",
     "truffle-contract": "^4.0.31",
     "web3": "^1.2.9"
   }

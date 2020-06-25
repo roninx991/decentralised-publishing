@@ -2,7 +2,7 @@ pragma solidity ^0.5.0;
 
 import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 
-contract GLDToken is ERC20 {
+contract DPToken is ERC20 {
 
     string public name = "DPToken";
     string public symbol = "DPT";
