@@ -1,7 +1,7 @@
 const Token = artifacts.require("DPToken");
-const Main = artifacts.require("MainContract");
+const Paper = artifacts.require("PaperContract");
 
 module.exports = function(deployer) {
     deployer.deploy(Token);
-    deployer.deploy(Main);
+    deployer.deploy(Paper);
 };

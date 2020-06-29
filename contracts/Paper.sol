@@ -1,13 +1,16 @@
 pragma solidity ^0.5.0;
 
+import './DPToken.sol';
+
 contract PaperContract {
+
+    address public contractOwner;
 
     struct Paper {
         string identifier;
         address author;
         address owner;
         uint rating;
-        uint cost;
         bool status;
         string title;
         address[] reviewers;
@@ -15,14 +18,21 @@ contract PaperContract {
 
     mapping(string => Paper) private papers;
 
+    DPToken token;
+
+    constructor() public {
+        contractOwner = msg.sender;
+    }
+
     function createPaper(string memory idr, string memory title) public {
         papers[idr].identifier = idr;
         papers[idr].title = title;
         papers[idr].owner = msg.sender;
         papers[idr].author = msg.sender;
-        papers[idr].cost = 0;
         papers[idr].rating = 0;
         papers[idr].status = false;
+        papers[idr].reviewers = [];
+        token.transfer()
     }
 
     function getPaperTitle(string memory idr) public view returns (string memory) {

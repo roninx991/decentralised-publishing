@@ -1,17 +1,21 @@
 const express = require('express');
+const fileupload = require('express-fileupload');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
 const UserRouter = require('./src/routes/user.route');
 const TokenRouter = require('./src/routes/token.route');
+const PaperRouter = require('./src/routes/paper.route');
 
 const app = express();
 
 app.use(bodyParser.json());
 app.use(cors());
+app.use(fileupload());
 
 app.use("/user/", UserRouter);
 app.use("/token/", TokenRouter);
+app.use("/paper/", PaperRouter);
 
 const PORT = 5000 | process.env.PORT;
 

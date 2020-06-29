@@ -28,6 +28,10 @@ const UserSchema = new Schema({
     account: {
         type: String,
         required: true
+    },
+    papers: {
+        type: Array,
+        default: []
     }
 });
 
