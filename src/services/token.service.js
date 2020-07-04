@@ -15,10 +15,9 @@ exports.buyToken = (account, amount, password) => {
         .deployed()
         .then(async (instance) => {
             try {
-                // console.log(web3.eth);
                 await web3.eth.personal.unlockAccount(process.env.COINBASE, process.env.COINBASE_PWD);
                 await web3.eth.personal.unlockAccount(account, password);
-                var txHashToken = await instance.transfer(account, amount, {from: process.env.COINBASE, gas: 50000});
+                var txHashToken = await instance.transfer(account, amount, {from: process.env.COINBASE, gas: 100000});
                 var txHash = await web3.eth.sendTransaction({from: account, to: process.env.COINBASE, value: 1});
                 await web3.eth.personal.lockAccount(process.env.COINBASE);
                 await web3.eth.personal.lockAccount(account);
@@ -71,11 +70,31 @@ exports.sellToken = (account, amount, password) => {
         });
 }
 
+exports.transfer = (from, to, amount, password) => {
+    return DPTokenContract
+        .deployed()    
+        .then(async (instance) => {
+            try {
+                var txHashToken = await instance.transfer(to, amount, {from: from, gas: 100000});                
+                return {
+                    code: "success",
+                    tokenTxHash: txHashToken,
+                };
+            } catch (err) {
+                console.log(err);
+                return {
+                    code: "failure",
+                    msg: "Somthing went wrong. Please make sure your account has sufficient balance to transfer tokens."
+                };
+            }
+        })
+}
+
 exports.getBalance = (account) => {
     return DPTokenContract
         .deployed()
         .then(async (instance) => {
-            var balance = await instance.balanceOf.call(account);
+            var balance = await instance.balanceOf(account);
             return balance.toString();
         })
         .catch((err) => {

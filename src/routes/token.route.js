@@ -11,7 +11,8 @@ router.post("/buy/", async (req, res) => {
                     code: "success", 
                     msg: {
                         tokenTxHash: response.tokenTxHash,
-                        ethTxHash: response.ethTxHash
+                        ethTxHash: response.ethTxHash,
+                        disclaimer: "Please save these Transaction hashes for future reference."
                     }
                 }
             );

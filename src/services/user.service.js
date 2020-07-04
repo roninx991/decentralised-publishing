@@ -78,7 +78,7 @@ function saveUser(user, account) {
 }
 
 async function userExistsAlready(user) {
-    const existingUser = await exports.findByEmail(user.email);
+    const existingUser = await findByEmail(user.email);
     if(existingUser) {
         return Promise.resolve(true);
     }
