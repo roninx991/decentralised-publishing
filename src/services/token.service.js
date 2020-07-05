@@ -19,8 +19,8 @@ exports.buyToken = (account, amount, password) => {
                 await web3.eth.personal.unlockAccount(account, password);
                 var txHashToken = await instance.transfer(account, amount, {from: process.env.COINBASE, gas: 100000});
                 var txHash = await web3.eth.sendTransaction({from: account, to: process.env.COINBASE, value: 1});
-                await web3.eth.personal.lockAccount(process.env.COINBASE);
-                await web3.eth.personal.lockAccount(account);
+                web3.eth.personal.lockAccount(process.env.COINBASE);
+                web3.eth.personal.lockAccount(account);
                 return {
                     code: "success",
                     tokenTxHash: txHashToken,
@@ -49,8 +49,8 @@ exports.sellToken = (account, amount, password) => {
                 await web3.eth.personal.unlockAccount(account, password);
                 var txHashToken = await instance.transfer(process.env.COINBASE, amount, {from: account, gas: 100000});
                 var txHash = await web3.eth.sendTransaction({from: process.env.COINBASE, to: account, value: amount});
-                await web3.eth.personal.lockAccount(process.env.COINBASE);
-                await web3.eth.personal.lockAccount(account);
+                web3.eth.personal.lockAccount(process.env.COINBASE);
+                web3.eth.personal.lockAccount(account);
                 console.log("Transaction successful.");
                 return {
                     code: "success",
@@ -70,7 +70,7 @@ exports.sellToken = (account, amount, password) => {
         });
 }
 
-exports.transfer = (from, to, amount, password) => {
+exports.transfer = (from, to, amount) => {
     return DPTokenContract
         .deployed()    
         .then(async (instance) => {

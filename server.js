@@ -6,6 +6,7 @@ const cors = require('cors');
 const UserRouter = require('./src/routes/user.route');
 const TokenRouter = require('./src/routes/token.route');
 const PaperRouter = require('./src/routes/paper.route');
+const ReviewRouter = require('./src/routes/review.route');
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(fileupload());
 app.use("/user/", UserRouter);
 app.use("/token/", TokenRouter);
 app.use("/paper/", PaperRouter);
+app.use("/review/", ReviewRouter);
 
 const PORT = 5000 | process.env.PORT;
 

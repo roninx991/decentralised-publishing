@@ -25,11 +25,27 @@ contract PaperContract {
         return papers[id].owner;
     }
 
+    function changeOwnership(string memory id, address newOwner) public {
+        papers[id].owner = newOwner;
+    }
+
     function getStatus(string memory id) public view returns (bool) {
         return papers[id].status;
     }
 
     function getRating(string memory id) public view returns (uint) {
         return papers[id].rating;
+    }
+
+    function addToRating(string memory id, uint r) public {
+        papers[id].rating += r;
+    }
+
+    function getReviewers(string memory id) public view returns (address[] memory) {
+        return papers[id].reviewers;
+    }
+
+    function addReviewers(string memory id, address reviewer) public {
+        papers[id].reviewers.push(reviewer);
     }
 }

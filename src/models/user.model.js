@@ -32,7 +32,12 @@ const UserSchema = new Schema({
     papers: {
         type: Array,
         default: []
-    }
+    },
+    type: {
+        type: Number,
+        required: true,
+        default: 0
+    } 
 });
 
 UserSchema.methods.setPassword = (password) => {
