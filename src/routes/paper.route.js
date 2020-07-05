@@ -3,7 +3,7 @@ const router = require('express').Router();
 const PaperService = require('../services/paper.service');
 
 router.post("/upload/", async (req, res) => {
-    var paperHash = await PaperService.createPaper(req.body.account, req.body.password, req.body.title, req.files.file);
+    var paperHash = await PaperService.createPaper(req.body.email, req.body.account, req.body.password, req.body.title, req.files.file);
     if (paperHash) {
         res.status(200).json({
             code: "success", 

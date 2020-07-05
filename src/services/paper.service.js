@@ -17,11 +17,11 @@ const TokenService = require('./token.service')
 
 PaperContract.setProvider(provider);
 
-exports.createPaper = (account, password, title, file) => {
+exports.createPaper = (email, account, password, title, file) => {
     return PaperContract
         .deployed()
         .then(async (instance) => {
-            var user = await User.findOne({account: account});
+            var user = await User.findOne({email: email});
             var fileHashObj = await ipfs.files.add(new Buffer.from(file.data));
             console.log("Hash: ", fileHashObj[0].hash);
             await createPaperInDB(fileHashObj[0].hash, title);
