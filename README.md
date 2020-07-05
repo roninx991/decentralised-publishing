@@ -99,4 +99,7 @@ Run the following commands on the terminal in project root directory:
 ```truffle migrate```
 
 ## Starting Node Application
-Run ```nodemon start``` on your terminal. The application should start on port 3001. View the application in your favourite browser using url: http://localhost:5000.
+Run ```nodemon start``` on your terminal. The application should start on port 5000. View the application in your favourite browser using url: http://localhost:5000.
+
+## Maintainers
+1. [Sangat Das](https://github.com/Sangatdas)
