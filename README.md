@@ -31,12 +31,12 @@ Before using the application you need to have certain tools and packages install
 ## Setting Project Environment Variables
 1. Create a .env file in project root directory
 2. Set following environment variables and their corresponding values
-  1. MONGODB_URI (URI Path to your mongo instance)
-  2. WEB3_PROVIDER (Web3 Provider URI)
-  3. COINBASE (Coinbase account of your geth instance)
-  4. COINBASE_PWD (Password of coinbase account)
-  5. IPFS_HOST (Hostname of IPFS node API Server)
-  6. IPFS_PORT (Port of IPFS Node API Server)
+  * MONGODB_URI (URI Path to your mongo instance)
+  * WEB3_PROVIDER (Web3 Provider URI)
+  * COINBASE (Coinbase account of your geth instance)
+  * COINBASE_PWD (Password of coinbase account)
+  * IPFS_HOST (Hostname of IPFS node API Server)
+  * IPFS_PORT (Port of IPFS Node API Server)
   
 ## Creating a Private Single Geth Node (for dev environment only)
 1. Create folder for storing chain data:
