@@ -1,11 +1,10 @@
 const Web3 = require('web3');
 const User = require('../models/user.model');
-const crypto = require('crypto');
 
 const web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
 
 exports.createNewUser = async (user) => {
-    const userExists = await userExistsAlready(user);
+    var userExists = await userExistsAlready(user);
     if(userExists) {
         console.log("User already exists!");
         return null;
@@ -20,26 +19,6 @@ exports.createNewUser = async (user) => {
         }
     }
 }
-
-exports.loginUser = async (loginRequest) => {
-    const user = await findByEmail(loginRequest.email);
-    if (user) {
-        let salt = user.password.split('$')[0];
-        let hash = crypto.createHmac('sha512',salt)
-                            .update(loginRequest.password)
-                            .digest("base64");
-        let password = salt + '$' + hash;
-        if (user.password === password) {
-            return Promise.resolve(user);
-        } else {
-            return null;
-        }
-    } else {
-        return null;
-    }
-}
-
-
 
 exports.updateUser = (email, perm_lvl) => {
     this.findByEmail(email).then((user) => {
@@ -83,17 +62,4 @@ async function userExistsAlready(user) {
         return Promise.resolve(true);
     }
     return Promise.resolve(false);
-}
-
-function findByEmail(email) {
-    return User.findOne({email: email}).then((user) => {
-        if (!user) {
-            return null;
-        } 
-        return user;
-    }).catch((err) => {
-        console.log("Error finding user: ", email);
-        console.log(err);
-        return null;
-    });
 }

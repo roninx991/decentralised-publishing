@@ -2,7 +2,11 @@ const express = require('express');
 const fileupload = require('express-fileupload');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const passport = require('passport');
 
+require('./src/config/passport');
+
+const AuthRouter = require('./src/routes/auth.route');
 const UserRouter = require('./src/routes/user.route');
 const TokenRouter = require('./src/routes/token.route');
 const PaperRouter = require('./src/routes/paper.route');
@@ -14,6 +18,7 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use(fileupload());
 
+app.use("/auth/", AuthRouter)
 app.use("/user/", UserRouter);
 app.use("/token/", TokenRouter);
 app.use("/paper/", PaperRouter);
