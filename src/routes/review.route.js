@@ -4,7 +4,7 @@ const ReviewService = require('../services/review.service');
 const PaperService = require('../services/paper.service');
 
 router.post("/", async (req, res) => {
-    var reviewAdded = await ReviewService.addReview(req.body.account, req.body.paper, req.body.rating, req.body.review, req.body.password);
+    var reviewAdded = await ReviewService.addReview(req.user.account, req.body.paper, req.body.rating, req.body.review, req.body.password);
     if (reviewAdded) {
         res.status(200).json({
             code: "success",

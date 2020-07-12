@@ -3,7 +3,7 @@ const router = require('express').Router();
 const TokenService = require('../services/token.service');
 
 router.post("/buy/", async (req, res) => {
-    var response = await TokenService.buyToken(req.body.account, req.body.amount, req.body.password);
+    var response = await TokenService.buyToken(req.user.account, req.body.amount, req.body.password);
     if (response) {
         if (response.code === "success") {
             res.status(200).json(
@@ -28,7 +28,7 @@ router.post("/buy/", async (req, res) => {
 });
 
 router.post("/sell/", async (req, res) => {
-    var response = await TokenService.sellToken(req.body.account, req.body.amount, req.body.password);
+    var response = await TokenService.sellToken(req.user.account, req.body.amount, req.body.password);
     if (response) {
         if (response.code === "success") {
             res.status(200).json(
@@ -50,8 +50,9 @@ router.post("/sell/", async (req, res) => {
         res.status(500).json({code: "failure", msg: "No response from backend"});
     }});
 
-router.get("/balance/:account", async (req, res) => {
-    var bal = await TokenService.getBalance(req.params.account);
+router.get("/balance/", async (req, res) => {
+    var bal = await TokenService.getBalance(req.user.account);
+    // console.log(req);
     res.status(200).json({balance: bal});
 });
 

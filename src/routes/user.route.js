@@ -11,4 +11,12 @@ router.post("/", async (req, res) => {
     }
 });
 
+router.get("/", async (req, res) => {
+    if (req.user) {
+        res.status(200).json(req.user);
+    } else {
+        res.sendStatus(401);
+    }
+})
+
 module.exports = router;

@@ -19,10 +19,10 @@ app.use(cors());
 app.use(fileupload());
 
 app.use("/auth/", AuthRouter)
-app.use("/user/", UserRouter);
-app.use("/token/", TokenRouter);
-app.use("/paper/", PaperRouter);
-app.use("/review/", ReviewRouter);
+app.use("/user/", passport.authenticate('jwt', {session: false}), UserRouter);
+app.use("/token/", passport.authenticate('jwt', {session: false}), TokenRouter);
+app.use("/paper/", passport.authenticate('jwt', {session: false}), PaperRouter);
+app.use("/review/", passport.authenticate('jwt', {session: false}), ReviewRouter);
 
 const PORT = 5000 | process.env.PORT;
 

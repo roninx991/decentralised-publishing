@@ -23,8 +23,8 @@ exports.buyToken = (account, amount, password) => {
                 web3.eth.personal.lockAccount(account);
                 return {
                     code: "success",
-                    tokenTxHash: txHashToken,
-                    ethTxHash: txHash
+                    tokenTxHash: txHashToken.tx,
+                    ethTxHash: txHash.transactionHash
                 };
             } catch (err) {
                 console.log(err);
@@ -51,11 +51,10 @@ exports.sellToken = (account, amount, password) => {
                 var txHash = await web3.eth.sendTransaction({from: process.env.COINBASE, to: account, value: amount});
                 web3.eth.personal.lockAccount(process.env.COINBASE);
                 web3.eth.personal.lockAccount(account);
-                console.log("Transaction successful.");
                 return {
                     code: "success",
-                    tokenTxHash: txHashToken,
-                    ethTxHash: txHash
+                    tokenTxHash: txHashToken.tx,
+                    ethTxHash: txHash.transactionHash
                 };
             } catch (err) {
                 console.log(err);

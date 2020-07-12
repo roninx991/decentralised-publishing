@@ -42,10 +42,11 @@ passport.use(new JWTStrategy({
     jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
     secretOrKey   : process.env.JWT_SECRET
 },
-    function (jwtPayload, cb) {
-        if(jwtPayload.email)
-            cb(null, jwtPayload);
-        cb(null, false);
+    function (user, cb) {
+        if(user.email) {
+            return cb(null, user);
+        } 
+        return cb(null, false);
     }
 ));
 
