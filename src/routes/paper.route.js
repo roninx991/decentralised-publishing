@@ -36,24 +36,18 @@ router.get("/", async (req, res) => {
 })
 
 router.get("/details/:id", async (req, res) => {
-    var paperLocation = 'http://' + process.env.IPFS_HOST + ':8080/ipfs/' + req.params.id; 
-    var paperOwner = await PaperService.getPaperOwner(req.params.id);
-    var paperAuthor = await PaperService.getPaperAuthor(req.params.id);
-    var paperStatus = await PaperService.getPaperStatus(req.params.id);
-    var paperRating = await PaperService.getPaperRating(req.params.id);
-    var paperReviewers = await PaperService.getPaperReviewers(req.params.id);
-    var paperTitle = await PaperService.getPaperTitle(req.params.id);
-    if (paperStatus !== null) {
+    var paper = await PaperService.getPaperById(req.params.id);
+    if (paper !== null) {
         res.status(200).json({
             code: "success", 
             paper: {
-                location: paperLocation,
-                title: paperTitle,
-                owner: paperOwner,
-                author: paperAuthor,
-                status: paperStatus,
-                rating: paperRating,
-                reviewers: paperReviewers,
+                location: paper.location,
+                title: paper.title,
+                owner: paper.owner,
+                author: paper.author,
+                status: paper.status,
+                rating: paper.rating,
+                reviews: paper.reviews,
             }
         });
     } else {

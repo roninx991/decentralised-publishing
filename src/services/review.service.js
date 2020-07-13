@@ -27,7 +27,6 @@ exports.addReview = async (account, hash, rating, review, password) => {
         if (reviewed) throw new Error("User has already reviewed this paper.");
         var reviewerInstance = await ReviewerContract.deployed()
         await web3.eth.personal.unlockAccount(process.env.COINBASE, process.env.COINBASE_PWD);
-        await web3.eth.personal.unlockAccount(account, password);
         console.log("Unlocked account");
         reviewerInstance.addReview(account, hash, rating, {from: process.env.COINBASE, gas: 100000});
         TokenService.transfer(account, process.env.COINBASE, 10);
@@ -64,17 +63,18 @@ exports.addReview = async (account, hash, rating, review, password) => {
                 weightedSum += reviewerCredibility*parseInt(reviewerRating.toString());
                 credSum += reviewerCredibility;
             }
-            mean = weightedSum / credSum;
+            mean = parseInt(Math.floor(weightedSum / credSum));
+            PaperService.setRating(hash, mean);
             // Transfer tokens to reviewer accounts and update credibility
+            await web3.eth.personal.unlockAccount(process.env.COINBASE, process.env.COINBASE_PWD);
             for (const reviewer of reviewers) {
-                var amount = Math.max(-9, parseInt((3 - Math.floor(Math.abs(reviewerRating - mean))) * 10.0 / 3.0))
+                var amount = Math.max(-9, parseInt((3 - Math.floor(Math.abs(reviewerRating - mean))) * 10.0 / 3.0));
                 var newCredibility = (reviewerCredibility + amount) < 0 ? 0 : (reviewerCredibility+amount);
-                await web3.eth.personal.unlockAccount(process.env.COINBASE, process.env.COINBASE_PWD);
                 reviewerInstance.setCredibility(account, newCredibility, { from: process.env.COINBASE, gas: 100000 });
-                console.log("Credibility updated successfully");
                 TokenService.transfer(process.env.COINBASE, reviewer, 10 + amount, { from: process.env.COINBASE, gas: 100000 });
-                console.log("Rewards distributed successfully");
             }
+            console.log("Credibility updation submitted successfully");
+            console.log("Rewards distribution submitted successfully");
         }
         return Promise.resolve(true);     
 
@@ -83,6 +83,7 @@ exports.addReview = async (account, hash, rating, review, password) => {
         return false;
     } finally {
         web3.eth.personal.lockAccount(account);
+        web3.eth.personal.lockAccount(process.env.COINBASE);
         console.log("Locked account");
     }
 

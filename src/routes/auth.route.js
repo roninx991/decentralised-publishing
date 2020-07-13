@@ -13,12 +13,19 @@ router.post("/login/", (req, res) => {
                 user   : user
             });
         }
-       req.login(user, {session: false}, (err) => {
+        var payload = {
+            account: user.account,
+            email: user.email,
+            type: user.type,
+            firstname: user.firstname,
+            lastname: user.lastname,
+        }
+        req.login(user, {session: false}, (err) => {
            if (err) {
                res.send(err);
            }
            // generate a signed son web token with the contents of user object and return it in the response
-           const token = jwt.sign(user, process.env.JWT_SECRET);
+           const token = jwt.sign(payload, process.env.JWT_SECRET);
            return res.json({token});
         });
     })(req, res);

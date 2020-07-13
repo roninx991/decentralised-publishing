@@ -67,6 +67,28 @@ exports.getAllPapers = async (email) => {
     }
 }
 
+exports.getPaperById = async (hash) => {
+    try {
+        var paper = await Paper.findOne({location: hash});
+        var res = paper.toJSON();
+        if (paper) {
+            res.author = await exports.getPaperAuthor(hash);
+            res.owner = await exports.getPaperOwner(hash);
+            res.status = await exports.getPaperStatus(hash);
+            if (!res.status) {
+                res.reviews = [];
+            } else {
+                res.rating = await exports.getPaperRating(hash);
+            }
+        } else {
+            return false;
+        }
+        return res;
+    } catch (err) {
+
+    }
+}
+
 exports.getPaperAuthor = (paperHash) => {
     return PaperContract
         .deployed()
@@ -90,7 +112,7 @@ exports.getPaperRating = (paperHash) => {
         .deployed()
         .then(async (instance) => {
             var rating = await instance.getRating(paperHash);
-            return Promise.resolve(rating.toString());       
+            return Promise.resolve(parseInt(rating));       
         });
 }
 
@@ -182,7 +204,7 @@ async function filterPapersBasedOnStatus(papers) {
         var res = [];
         for (const paper of papers) {
             var status = await exports.getPaperStatus(paper.location);
-            if (status) res.push(paper);
+            if (!status) res.push(paper);
         }
         return Promise.resolve(res);
     } catch (err) {
