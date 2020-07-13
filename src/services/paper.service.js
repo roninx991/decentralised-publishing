@@ -45,6 +45,28 @@ exports.createPaper = (email, account, password, title, file) => {
         })
 }
 
+exports.getAllPapers = async (email) => {
+    try {
+        var user = await User.findOne({email: email});
+        if (user.type > 0) {
+            var papers = await Paper.find();
+            var res = await filterPapersBasedOnStatus(papers);
+            return res;
+        } else {
+            var papers = await Paper.find({
+                location : {$in: 
+                    user.papers
+                } 
+            });
+            var res = await addRatingAndStatusToEachPaper(papers);
+            return res;
+        }   
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
+}
+
 exports.getPaperAuthor = (paperHash) => {
     return PaperContract
         .deployed()
@@ -108,11 +130,11 @@ exports.addReviewer = (paperHash, account, password) => {
         .then(async (instance) => {
             await web3.eth.personal.unlockAccount(account, password);
             console.log("Unlocked account");
-            await instance.addReviewers(paperHash, account, {from: account, gas: 100000});
+            var status = await instance.addReviewers(paperHash, account, {from: account, gas: 100000});
             console.log("Added reviewer");
             web3.eth.personal.lockAccount(account);
             console.log("Locked account");
-            return Promise.resolve(true);
+            return Promise.resolve(status);
         })
         .catch(err => {
             console.log(err);
@@ -128,10 +150,12 @@ exports.updateRating = (paperHash, account, rating, password) => {
             console.log("Unlocked account");
             await TokenService.transfer(account, process.env.COINBASE, 10);
             console.log("Transferred tokens");
-            await instance.addToRating(paperHash, rating, {from: account, gas: 100000});
-            console.log("Added to rating");
             web3.eth.personal.lockAccount(account);
             console.log("Locked account");
+            await web3.eth.personal.unlockAccount(process.env.COINBASE, process.env.COINBASE_PWD);
+            console.log("Unlocked account");
+            await instance.setRating(paperHash, rating, {from: process.env.COINBASE, gas: 100000});
+            console.log("Set rating");
             return Promise.resolve(true);
         })
         .catch(err => {
@@ -151,4 +175,38 @@ async function createPaperInDB(location, title) {
     paper.save();
     console.log("Paper meta data saved in DB");
     return Promise.resolve(true);
+}
+
+async function filterPapersBasedOnStatus(papers) {
+    try {
+        var res = [];
+        for (const paper of papers) {
+            var status = await exports.getPaperStatus(paper.location);
+            if (status) res.push(paper);
+        }
+        return Promise.resolve(res);
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
+}
+
+async function addRatingAndStatusToEachPaper(papers) {
+    try {
+        var res = [];
+        for (const paper of papers) {
+            var status = await exports.getPaperStatus(paper.location);
+            var paperJSON = paper.toJSON();
+            paperJSON.status = status;
+            if (status) {
+                var rating = await exports.getPaperRating(paper.location);
+                paperJSON.rating = rating;
+            }
+            res.push(paperJSON);
+        }
+        return Promise.resolve(res);
+    } catch (err) {
+        console.log(err);
+        return 0;
+    }
 }

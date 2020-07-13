@@ -18,11 +18,20 @@ contract ReviewerContract {
     }
 
     function addReview(address id, string memory s, uint r) public {
+        require(!reviewers[id].reviews[s].hasReviewed, "Reviewer has already reviewed this paper.");
         reviewers[id].reviews[s].rating = r;
         reviewers[id].reviews[s].hasReviewed = true;
     }
 
     function hasReviewed(address id, string memory s) public view returns (bool) {
         return reviewers[id].reviews[s].hasReviewed;
+    }
+
+    function getCredibility(address id) public view returns (uint) {
+        return reviewers[id].credibility;
+    }
+
+    function setCredibility(address id, uint credibility) public {
+        reviewers[id].credibility = credibility;
     }
 }

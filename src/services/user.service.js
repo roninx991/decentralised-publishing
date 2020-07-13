@@ -63,3 +63,16 @@ async function userExistsAlready(user) {
     }
     return Promise.resolve(false);
 }
+
+function findByEmail(email) {
+    return User.findOne({email: email}).then((user) => {
+        if (!user) {
+            return null;
+        } 
+        return user;
+    }).catch((err) => {
+        console.log("Error finding user: ", email);
+        console.log(err);
+        return null;
+    });
+}

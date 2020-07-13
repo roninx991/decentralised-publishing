@@ -37,8 +37,9 @@ contract PaperContract {
         return papers[id].rating;
     }
 
-    function addToRating(string memory id, uint r) public {
-        papers[id].rating += r;
+    function setRating(string memory id, uint r) public {
+        require(papers[id].reviewers.length < 5, "Maximum reviewers for paper reached");
+        papers[id].rating = r;
     }
 
     function getReviewers(string memory id) public view returns (address[] memory) {
@@ -46,6 +47,10 @@ contract PaperContract {
     }
 
     function addReviewers(string memory id, address reviewer) public {
+        require(papers[id].owner != reviewer, "Author cannot review his own paper");
         papers[id].reviewers.push(reviewer);
+        if (papers[id].reviewers.length == 5) {
+            papers[id].status = true;
+        }
     }
 }

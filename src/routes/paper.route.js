@@ -17,6 +17,24 @@ router.post("/upload/", async (req, res) => {
     }
 });
 
+router.get("/", async (req, res) => {
+    try {
+        var papers = await PaperService.getAllPapers(req.user.email);
+        if (papers && papers.length !== 0) {
+            res.status(200).json(papers);
+        } else {
+            res.status(404).json({
+                error: "Unable to retreive papers for given user."
+            })
+        }    
+    } catch (err) {
+        res.status(500).json({
+            error: "Fatal error"
+        });
+        console.log(err);
+    }
+})
+
 router.get("/details/:id", async (req, res) => {
     var paperLocation = 'http://' + process.env.IPFS_HOST + ':8080/ipfs/' + req.params.id; 
     var paperOwner = await PaperService.getPaperOwner(req.params.id);

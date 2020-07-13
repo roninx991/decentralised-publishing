@@ -2,6 +2,8 @@ const router = require('express').Router();
 const passport    = require('passport');
 const jwt = require('jsonwebtoken');
 
+const UserService = require('../services/user.service');
+
 router.post("/login/", (req, res) => {
     passport.authenticate('local', {session: false}, (err, user, info) => {
         if (err || !user) {
@@ -20,6 +22,15 @@ router.post("/login/", (req, res) => {
            return res.json({token});
         });
     })(req, res);
+});
+
+router.post("/register", async (req, res) => {
+    var user = await UserService.createNewUser(req.body);
+    if (user) {
+        res.status(200).json({code: "success", msg: "Account created successfully. Please login to continue."});
+    } else {
+        res.status(400).json({code: "error", msg: "Failed to create account using given details. Try again after some time or with a different email"});
+    }
 });
 
 module.exports = router;

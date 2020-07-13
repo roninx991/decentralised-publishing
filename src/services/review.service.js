@@ -13,40 +13,81 @@ const ReviewerContractJSON = require(path.join(__dirname, '../../build/contracts
 const ReviewerContract = Contract(ReviewerContractJSON);
 
 const PaperService = require('./paper.service');
+const TokenService = require('./token.service');
 
 ReviewerContract.setProvider(provider);
 
-exports.addReview = (account, hash, rating, review, password) => {
-    return ReviewerContract
-        .deployed()
-        .then(async (instance) => {
-            var reviewed = await hasReviewed(account, hash);
-            if(!reviewed) {
-                await web3.eth.personal.unlockAccount(account, password);
-                console.log("Unlocked account");
-                await instance.addReview(account, hash, rating, {from: account, gas: 100000});
-                console.log("Added review for paper by reviewer");
-                var paperUpdated = await updatePaper(hash, account, rating, password);
-                if (paperUpdated) {
-                    var paper = await Paper.findOne({location: hash});
-                    paper.reviews.push({
-                        reviewer: account,
-                        text: review
-                    });
-                    paper.save();
-                    console.log("Review pushed in DB");
-                }
-                web3.eth.personal.lockAccount(account);
-                console.log("Locked account");
-                return Promise.resolve(true);    
-            }
-            return false;
-        })
-        .catch(err => {
-            console.log(err);
-            return false;
+exports.addReview = async (account, hash, rating, review, password) => {
+    try {
+        var status = await PaperService.getPaperStatus(hash);
+        if (status) throw new Error("Reviewing for this paper has been closed");
+        var author = await PaperService.getPaperAuthor(hash);
+        if (author == account) throw new Error("Author is not allowed to review his own paper");
+        var reviewed = await hasReviewed(account, hash);
+        if (reviewed) throw new Error("User has already reviewed this paper.");
+        var reviewerInstance = await ReviewerContract.deployed()
+        await web3.eth.personal.unlockAccount(process.env.COINBASE, process.env.COINBASE_PWD);
+        await web3.eth.personal.unlockAccount(account, password);
+        console.log("Unlocked account");
+        reviewerInstance.addReview(account, hash, rating, {from: process.env.COINBASE, gas: 100000});
+        TokenService.transfer(account, process.env.COINBASE, 10);
+        console.log("Submitted review for paper by reviewer");
+    } catch (err) {
+        console.log(err);
+        return false;
+    } finally {
+        web3.eth.personal.lockAccount(process.env.COINBASE);
+        web3.eth.personal.lockAccount(account);
+    }
+
+    try {
+        PaperService.addReviewer(hash, account, password);        
+        console.log("Reviewer to be added in paper reviewers.");
+        var paper = await Paper.findOne({location: hash});
+        paper.reviews.push({
+            reviewer: account,
+            text: review
         });
+        paper.save();
+        console.log("Review pushed in DB");
+        status = await PaperService.getPaperStatus(hash);
+        if (status) {
+            var reviewers = await PaperService.getPaperReviewers(hash);
+            var credSum = 0, weightedSum = 0, mean = 0;
+            var cred = 0, reviewerCredibility = 0, reviewerRating = 0;
+            // Finding weighted mean rating
+            for (const reviewer of reviewers) {
+                cred = await reviewerInstance.getCredibility(reviewer);
+                console.log("Credibility of reviewer: " + cred.toString());
+                reviewerCredibility = (parseInt(cred.toString()) == 0) ? 1 : parseInt(cred.toString());
+                reviewerRating = await reviewerInstance.getReview(reviewer, hash);
+                weightedSum += reviewerCredibility*parseInt(reviewerRating.toString());
+                credSum += reviewerCredibility;
+            }
+            mean = weightedSum / credSum;
+            // Transfer tokens to reviewer accounts and update credibility
+            for (const reviewer of reviewers) {
+                var amount = Math.max(-9, parseInt((3 - Math.floor(Math.abs(reviewerRating - mean))) * 10.0 / 3.0))
+                var newCredibility = (reviewerCredibility + amount) < 0 ? 0 : (reviewerCredibility+amount);
+                await web3.eth.personal.unlockAccount(process.env.COINBASE, process.env.COINBASE_PWD);
+                reviewerInstance.setCredibility(account, newCredibility, { from: process.env.COINBASE, gas: 100000 });
+                console.log("Credibility updated successfully");
+                TokenService.transfer(process.env.COINBASE, reviewer, 10 + amount, { from: process.env.COINBASE, gas: 100000 });
+                console.log("Rewards distributed successfully");
+            }
+        }
+        return Promise.resolve(true);     
+
+    } catch (err) { 
+        console.log(err);
+        return false;
+    } finally {
+        web3.eth.personal.lockAccount(account);
+        console.log("Locked account");
+    }
+
 }
+    
 
 exports.getReview = (account, hash) => {
     return ReviewerContract
@@ -74,12 +115,4 @@ function hasReviewed(account, hash) {
             console.log(err);
             return 0;
         });
-}
-
-async function updatePaper(hash, account, rating, password) {
-    await PaperService.addReviewer(hash, account, password);
-    console.log("Reviewer added in paper reviewers");
-    await PaperService.updateRating(hash, account, rating, password, {from: account, gas: 100000});
-    console.log("Paper rating updated");
-    return Promise.resolve(true);
 }
