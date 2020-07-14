@@ -95,13 +95,25 @@ exports.getReview = (account, hash) => {
         .deployed()
         .then(async (instance) => {
             var review = await instance.getReview(account, hash);
-            console.log(review.toString());
             return Promise.resolve(review.toString());
         })
         .catch(err => {
             console.log(err);
             return 0;
         });
+}
+
+exports.getReviewerCredibility = (account) => {
+    return ReviewerContract
+    .deployed()
+    .then(async (instance) => {
+        var credibility = await instance.getCredibility(account);
+        return Promise.resolve(parseInt(credibility));
+    })
+    .catch(err => {
+        console.log(err);
+        return 0;
+    });
 }
 
 function hasReviewed(account, hash) {

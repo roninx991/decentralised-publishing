@@ -1,8 +1,14 @@
 const Web3 = require('web3');
+const path = require('path');
+const Contract = require('truffle-contract');
+
 const User = require('../models/user.model');
 
 const web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
 
+const TokenService = require('./token.service');
+const ReviewService =require('./review.service');
+ 
 exports.createNewUser = async (user) => {
     var userExists = await userExistsAlready(user);
     if(userExists) {
@@ -35,6 +41,26 @@ exports.updateUser = (email, perm_lvl) => {
         console.log(err);
         return null;
     })
+}
+
+exports.getUserDetailsById = async (user) => {
+    try {
+        var res = null; 
+        res = user;
+        res.balance = await TokenService.getBalance(user.account);
+        if (user.type > 0) {
+            res.credibility = await ReviewService.getReviewerCredibility(user.account);
+        } else if (user.type === 0) {
+            var tempUser = await User.findOne({email: user.email})
+            res.sub_count = tempUser.papers.length;    
+        } else {
+            throw new Error("Unknown user type");
+        }
+    } catch (err) {
+        console.log(err);
+    } finally {
+        return Promise.resolve(res);
+    }
 }
 
 function saveUser(user, account) {

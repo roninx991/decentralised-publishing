@@ -25,7 +25,6 @@ passport.use(new LocalStrategy({
                     lastname: user.lastname,
                     email: user.email,
                     account: user.account,
-                    papers: user.papers,
                     type: user.type
                 }
                 return cb(null, userResponse, {message: 'Logged in successfully.'});

@@ -94,7 +94,7 @@ exports.getBalance = (account) => {
         .deployed()
         .then(async (instance) => {
             var balance = await instance.balanceOf(account);
-            return balance.toString();
+            return parseInt(balance);
         })
         .catch((err) => {
             console.log(err);
