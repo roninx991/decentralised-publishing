@@ -83,8 +83,8 @@ Run following commands on your terminal:
 ```ipfs init```
 
 2. Configure IPFS to allow CORS (You can also directly edit /home//snap/ipfs/1170/.ipfs)
-```ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin '[\"*\"]'```
-```ipfs config --json API.HTTPHeaders.Access-Control-Allow-Methods '[\"PUT\", \"GET\", \"POST\"]'```
+```ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin '["*"]'```
+```ipfs config --json API.HTTPHeaders.Access-Control-Allow-Methods '["PUT", "GET", "POST"]'```
 
 3. Start IPFS Daemon
 ```ipfs daemon```
