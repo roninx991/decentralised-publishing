@@ -1,4 +1,4 @@
-# decentralised-publishing (original project named as SARA)
+# decentralised-publishing
 A Decentralised Solution to publish research papers by organizations.
 
 In recent times, many organizations have started to take up the task of publishing scientific material and make it available to new budding researchers. However, this has also paved the way for many organizations to this work for only monetary gain rather than publishing standard material. Blockchain is considered as the second biggest invention after the internet. It is a technology that can disrupt any current process. Blockchain in reviewing is a new concept which might help in solving the current paper reviewing system by decentralizing the process and making it open to the public. Also the participants of the system can get monetary benefit fairly. This project is a POC of how the system will work.
